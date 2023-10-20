@@ -1,4 +1,7 @@
-let config = {
+let highScoreTracker = 0
+
+
+let config = { 
     type: Phaser.CANVAS,
     width: 640,
     height: 480,
@@ -13,5 +16,7 @@ let borderPadding = borderUISize / 3;
 
 // reserve keyboard variables
 let keyF, keyR, keyLEFT, keyRIGHT;
+
+
 
 

@@ -13,6 +13,7 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+
         // place tile sprite
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
 
@@ -65,7 +66,27 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
+
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
+
+        //display high score
+        let highScoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 350
+        }
+
+
+        this.highScoreLeft = this.add.text(400, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
+
+        
 
         // GAME OVER flag
         this.gameOver = false;
@@ -83,6 +104,10 @@ class Play extends Phaser.Scene {
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
+            const SavedHighscore = localStorage.getItem('highScoreTracker'); //retrieves high score global var
+            if(SavedHighscore || SavedHighscore == 0) {
+                highScoreTracker = parseInt(SavedHighscore); //converts the string number from getItem to an Int
+            }
         }
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -111,6 +136,7 @@ class Play extends Phaser.Scene {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
         }
+
     }
 
     checkCollision(rocket, ship) {
@@ -138,8 +164,19 @@ class Play extends Phaser.Scene {
         });
         // score add and repaint
         this.p1Score += ship.points;
+
+        if(this.p1Score > highScoreTracker) {
+            highScoreTracker = this.p1Score  //update high score
+            localStorage.setItem('highScoreTracker', highScoreTracker); //save it to the local stack
+        }
+
+
         this.scoreLeft.text = this.p1Score; 
+
+        this.highScoreLeft.text = "High Score: " + highScoreTracker;
         
         this.sound.play('sfx_explosion');
+
+
       }
 }
