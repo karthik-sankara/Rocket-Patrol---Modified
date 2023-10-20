@@ -108,8 +108,8 @@ class Play extends Phaser.Scene {
     update() {
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
-            this.backgroundMusic.stop();
             this.scene.restart();
+            this.background_Music.stop();
             const SavedHighscore = localStorage.getItem('highScoreTracker'); //retrieves high score global var
             if(SavedHighscore || SavedHighscore == 0) {
                 highScoreTracker = parseInt(SavedHighscore); //converts the string number from getItem to an Int
@@ -117,8 +117,8 @@ class Play extends Phaser.Scene {
         }
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            this.background_music.stop();
             this.scene.start("menuScene");
+            this.background_music.stop();
         }
 
         this.starfield.tilePositionX -= 4;  // update tile sprite
@@ -181,9 +181,23 @@ class Play extends Phaser.Scene {
         this.scoreLeft.text = this.p1Score; 
 
         this.highScoreLeft.text = "High Score: " + highScoreTracker;
-        
-        this.sound.play('sfx_explosion');
 
+
+        const randomNumber = Math.ceil(Math.random()*4);  //random sounds
+
+        if(randomNumber == 1) {
+            this.sound.play('sfx_explosion1');
+        }
+        if(randomNumber == 2) {
+            this.sound.play('sfx_explosion2');
+        }
+        if(randomNumber == 3) {
+            this.sound.play('sfx_explosion3');
+        }
+        if(randomNumber == 4) {
+            this.sound.play('sfx_explosion4');
+        }
+    
 
       }
 }
