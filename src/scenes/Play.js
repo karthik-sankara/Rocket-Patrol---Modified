@@ -10,7 +10,7 @@ class Play extends Phaser.Scene {
         this.load.image('starfield', './assets/starfield.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
-        this.load.audio('background_music', './assets/my-universe-147152.mp3');
+        this.load.audio('background_music', './assets/my-universe-147152.mp3'); //background music 
     }
 
     create() {
@@ -101,7 +101,7 @@ class Play extends Phaser.Scene {
 
         this.background_music = this.sound.add('background_music', {volume: 0.2, loop: true});
 
-        this.background_music.play();
+        this.background_music.play();           //initialize music
 
     }
 
