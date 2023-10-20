@@ -10,10 +10,10 @@ class Play extends Phaser.Scene {
         this.load.image('starfield', './assets/starfield.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
+        this.load.audio('background_music', './assets/my-universe-147152.mp3');
     }
 
     create() {
-
         // place tile sprite
         this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0, 0);
 
@@ -80,11 +80,11 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 350
+            fixedWidth: 300
         }
 
 
-        this.highScoreLeft = this.add.text(400, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
+        this.highScoreLeft = this.add.text(250, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
 
         
 
@@ -98,11 +98,17 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
+
+        this.background_music = this.sound.add('background_music', {volume: 0.2, loop: true});
+
+        this.background_music.play();
+
     }
 
     update() {
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+            this.backgroundMusic.stop();
             this.scene.restart();
             const SavedHighscore = localStorage.getItem('highScoreTracker'); //retrieves high score global var
             if(SavedHighscore || SavedHighscore == 0) {
@@ -111,6 +117,7 @@ class Play extends Phaser.Scene {
         }
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.background_music.stop();
             this.scene.start("menuScene");
         }
 
