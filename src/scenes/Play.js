@@ -50,6 +50,10 @@ class Play extends Phaser.Scene {
             frameRate: 30
         });
 
+
+
+
+
         // initialize score
         this.p1Score = 0;
 
@@ -59,17 +63,16 @@ class Play extends Phaser.Scene {
             fontSize: '28px',
             backgroundColor: '#F3B141',
             color: '#843605',
-            align: 'right',
+            align: 'left',
             padding: {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 100
+            fixedWidth: 70
         }
-
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
 
-        //display high score
+        //display high score mod
         let highScoreConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
@@ -80,13 +83,23 @@ class Play extends Phaser.Scene {
                 top: 5,
                 bottom: 5,
             },
-            fixedWidth: 300
+            fixedWidth: 270
         }
+        this.highScoreLeft = this.add.text(150, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
 
 
-        this.highScoreLeft = this.add.text(250, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
+        //game timer mod
+        this.gameTimer = game.settings.gameTimer / 1000;
+        this.timerEvent = this.time.addEvent({
+            delay: 1000,  // Delay in milliseconds (1000ms = 1 second)
+            callback: this.updateTimer,
+            callbackScope: this,
+            loop: true      // Set to true to make the event repeat
+        });
+        this.timeDisplay = this.add.text(440, 50, 'Time: ' + this.gameTimer, { fontSize: '32px', fill: '#fff' });
 
-        
+
+
 
         // GAME OVER flag
         this.gameOver = false;
@@ -105,16 +118,30 @@ class Play extends Phaser.Scene {
 
     }
 
+    updateTimer() {             //helper function for create so it could accurately decrease time
+        if (this.gameTimer > 0) {
+            this.gameTimer -= 1;
+        }
+    
+        // Update the time remaining text
+        this.timeDisplay.setText('Time: ' + this.gameTimer);
+    }
+
+
+
     update() {
+
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
-            this.background_Music.stop();
+            this.background_music.stop();
             const SavedHighscore = localStorage.getItem('highScoreTracker'); //retrieves high score global var
             if(SavedHighscore || SavedHighscore == 0) {
                 highScoreTracker = parseInt(SavedHighscore); //converts the string number from getItem to an Int
             }
         }
+
+
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.scene.start("menuScene");

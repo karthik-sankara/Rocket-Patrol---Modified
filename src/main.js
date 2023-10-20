@@ -1,4 +1,4 @@
-let highScoreTracker = 0
+let highScoreTracker = 0    //high score mod
 
 
 let config = { 
