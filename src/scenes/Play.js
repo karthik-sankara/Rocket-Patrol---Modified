@@ -57,7 +57,7 @@ class Play extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'explode2',                //had to cr
+            key: 'explode2',                //had to create another animation for the smaller explosion sprite for smaller spaceship
             frames: this.anims.generateFrameNumbers('explosion2', { 
                 start: 0, 
                 end: 9, 
@@ -73,7 +73,7 @@ class Play extends Phaser.Scene {
         this.p1Score = 0;
 
         // display score
-        let scoreConfig = {
+        let scoreConfig = {         
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#F3B141',
@@ -88,7 +88,7 @@ class Play extends Phaser.Scene {
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
 
         //display high score mod
-        let highScoreConfig = {
+        let highScoreConfig = {         //setting up high score display style
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#F3B141',
@@ -103,15 +103,15 @@ class Play extends Phaser.Scene {
         this.highScoreLeft = this.add.text(150, 50, 'High Score: ' + highScoreTracker, highScoreConfig);
 
 
-        //game timer mod
-        this.gameTimer = game.settings.gameTimer / 1000;
+        //game timer mod                //creates display for time
+        this.game_Timer = game.settings.gameTimer / 1000;
         this.timerEvent = this.time.addEvent({
             delay: 1000,  // Delay in milliseconds (1000ms = 1 second)
             callback: this.updateTimer,
             callbackScope: this,
             loop: true      // Set to true to make the event repeat
         });
-        this.timeDisplay = this.add.text(440, 50, 'Time: ' + this.gameTimer, { fontSize: '32px', fill: '#fff' });
+        this.timeDisplay = this.add.text(440, 50, 'Time: ' + this.game_Timer, { fontSize: '32px', fill: '#fff' });
 
 
 
@@ -119,13 +119,9 @@ class Play extends Phaser.Scene {
         // GAME OVER flag
         this.gameOver = false;
 
-        // 60-second play clock
+        // play clock based on difficulty and current state 
         scoreConfig.fixedWidth = 0;
-        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
-            this.gameOver = true;
-        }, null, this);
+        
 
         this.background_music = this.sound.add('background_music', {volume: 0.2, loop: true});
 
@@ -134,17 +130,36 @@ class Play extends Phaser.Scene {
     }
 
     updateTimer() {             //helper function for create so it could accurately decrease time
-        if (this.gameTimer > 0) {
-            this.gameTimer -= 1;
+        if (this.game_Timer > 0) {
+            this.game_Timer -= 1;
         }
     
         // Update the time remaining text
-        this.timeDisplay.setText('Time: ' + this.gameTimer);
+        this.timeDisplay.setText('Time: ' + this.game_Timer);
     }
 
 
 
     update() {
+        let scoreConfig = {                 //had to remove clock config as it was difficult to add time to the display bc ut was ending prematurely 
+            fontFamily: 'Courier',          
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'left',
+            padding: {                  //instead I have a copy of the score config here for End Game options
+                top: 5,                 
+                bottom: 5,
+            },
+            fixedWidth: 70
+        }
+        scoreConfig.fixedWidth = 0              //originally clock was not synced with time display for time to the clock mod
+        if(this.game_Timer == 0) {              //instead relying on clock, ill rely on the time display I created
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← to Menu', scoreConfig).setOrigin(0.5);
+            this.gameOver = true;
+        }
+
 
         // check key input for restart / menu
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
@@ -155,7 +170,6 @@ class Play extends Phaser.Scene {
                 highScoreTracker = parseInt(SavedHighscore); //converts the string number from getItem to an Int
             }
         }
-
 
 
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -170,24 +184,29 @@ class Play extends Phaser.Scene {
             this.ship01.update();               // update spaceship (x3)
             this.ship02.update();
             this.ship03.update();
-            this.ship04.update();
+            this.ship04.update();       //update new spaceship 
         }
 
-        if (this.checkCollisionSpecial(this.p1Rocket, this.ship04)) {
+
+        if (this.checkCollisionSpecial(this.p1Rocket, this.ship04)) {       //uses special collision special function for smaller, faster spaceship
+            this.game_Timer += 3;        //special 2 second increase if you hit smaller faster spaceship
             this.p1Rocket.reset();
             this.shipExplode(this.ship04);
         }
 
         // check collisions
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
+            this.game_Timer += 2;      // 1 second increase in time if you hit ship3
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
         }
         if (this.checkCollision(this.p1Rocket, this.ship02)) {
+            this.game_Timer += 2;      //1 second increase in time if you hit ship2
             this.p1Rocket.reset();
             this.shipExplode(this.ship02);
         }
         if (this.checkCollision(this.p1Rocket, this.ship01)) {
+            this.game_Timer += 2;      //1 second increase in time if you hit ship2
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
         }
@@ -208,7 +227,7 @@ class Play extends Phaser.Scene {
     }
 
     checkCollision(rocket, ship) {
-        // simple AABB checking
+        // simple AABB checking                 //originak collision detecton for normal space ships 
         if (rocket.x < ship.x + ship.width && 
             rocket.x + rocket.width > ship.x && 
             rocket.y < ship.y + ship.height &&
@@ -225,7 +244,7 @@ class Play extends Phaser.Scene {
         // temporarily hide ship
         ship.alpha = 0;                         
         // create explosion sprite at ship's position
-        if(ship instanceof Spaceship) {
+        if(ship instanceof Spaceship) {                     //checking object type so program knows what sprite to use
             let boom = this.add.sprite(ship.x, ship.y, 'explosion1').setOrigin(0, 0);
             boom.anims.play('explode1');             // play explode animation
             boom.on('animationcomplete', () => {    // callback after anim completes
@@ -234,7 +253,7 @@ class Play extends Phaser.Scene {
                 boom.destroy();                       // remove explosion sprite
             });
         }
-        else if(ship instanceof SpecialSpaceship) {
+        else if(ship instanceof SpecialSpaceship) {     //created separate animation for smaller explosions
             let boom = this.add.sprite(ship.x, ship.y, 'explosion2').setOrigin(0, 0);
             boom.anims.play('explode2');             // play explode animation
             boom.on('animationcomplete', () => {    // callback after anim completes
@@ -255,10 +274,10 @@ class Play extends Phaser.Scene {
 
         this.scoreLeft.text = this.p1Score; 
 
-        this.highScoreLeft.text = "High Score: " + highScoreTracker;
+        this.highScoreLeft.text = "High Score: " + highScoreTracker;        //high score mod
 
 
-        const randomNumber = Math.ceil(Math.random()*4);  //random sounds
+        const randomNumber = Math.ceil(Math.random()*4);  //generates random number from 1-4, based on rand number: plays a specific sound
 
         if(randomNumber == 1) {
             this.sound.play('sfx_explosion1');

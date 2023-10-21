@@ -18,7 +18,7 @@ class Menu extends Phaser.Scene {
       this.cameras.main.setBackgroundColor('#0000FF'); // Set to blue color
 
       let menuConfig = {
-          fontFamily: 'Impact',
+          fontFamily: 'Impact',     //customized title mode
           fontSize: '28px',
           backgroundColor: 'orange',
           color: 'black',
@@ -51,7 +51,7 @@ class Menu extends Phaser.Scene {
         
 
         this.highScoreLeft = this.add.text((game.config.width/2) - 100, 400, highScoreTracker, highScoreConfig);
-        this.highScoreLeft.text = 'High Score: ' + highScoreTracker;
+        this.highScoreLeft.text = 'High Score: ' + highScoreTracker;    //display high score on menu
 
 
 

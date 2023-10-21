@@ -4,10 +4,10 @@ class SpecialSpaceship extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture, frame);
         scene.add.existing(this);   // add to existing scene
         this.points = pointValue;   // store pointValue
-        this.moveSpeed = 6        // pixels per frame   //speed affects collision timings ??
+        this.moveSpeed = 6        // pixels per frame   //set faster speed for this special spaceship
     }
 
-    update() {
+    update() {                  //for the most part, same as spaceship class
 
         // move spaceship left
         this.x -= this.moveSpeed;
